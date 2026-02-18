@@ -1,0 +1,67 @@
+name: Claude Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review, reopened]
+
+  workflow_call:
+    inputs:
+      custom_instructions:
+        description: "Additional review instructions appended to the default prompt"
+        required: false
+        type: string
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN:
+        required: true
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number || github.event.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  review:
+    if: >-
+      vars.CLAUDE_REVIEW_DISABLED != 'true' &&
+      github.event.pull_request.draft == false &&
+      (
+        github.event.pull_request.author_association == 'OWNER' ||
+        github.event.pull_request.author_association == 'MEMBER' ||
+        github.event.pull_request.author_association == 'COLLABORATOR' ||
+        github.event.pull_request.author_association == 'CONTRIBUTOR'
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Claude Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: true
+          direct_prompt: |
+            Review this pull request. Focus on:
+            - Code quality and readability
+            - Potential bugs or logic errors
+            - Security concerns
+            - Performance implications
+
+            Use inline review comments only for issues that need attention -- bugs, security,
+            performance, or readability problems. Do not leave inline comments on things that
+            look good; positive feedback belongs in the summary only. Inline praise is an
+            unnecessary distraction.
+
+            Be concise and actionable. Skip nitpicks and style preferences.
+
+            ${{ inputs.custom_instructions }}
+          allowed_tools: |
+            GH PR Comment
+            GH PR Diff
+            GH PR View

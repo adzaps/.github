@@ -1,0 +1,6 @@
+{
+  "name": "Claude Code",
+  "description": "Interactive @claude assistant for issues and pull requests. Calls the org-wide reusable workflow from adzaps/.github.",
+  "iconName": "octicon chat-bubbles",
+  "categories": ["Automation", "AI"]
+}
