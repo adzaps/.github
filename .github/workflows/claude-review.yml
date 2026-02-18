@@ -43,9 +43,12 @@ jobs:
       - name: Claude Review
         uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           track_progress: true
-          direct_prompt: |
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
             Review this pull request. Focus on:
             - Code quality and readability
             - Potential bugs or logic errors
@@ -60,7 +63,5 @@ jobs:
             Be concise and actionable. Skip nitpicks and style preferences.
 
             ${{ inputs.custom_instructions }}
-          allowed_tools: |
-            GH PR Comment
-            GH PR Diff
-            GH PR View
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"

@@ -62,6 +62,6 @@ jobs:
       - name: Claude Code
         uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          trigger_phrase: "@claude"
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: true
           claude_args: ${{ inputs.custom_instructions && format('--system-prompt "{0}"', inputs.custom_instructions) || '' }}
