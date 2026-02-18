@@ -26,6 +26,11 @@ on:
   pull_request:
     types: [opened, synchronize, ready_for_review, reopened]
 
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
 jobs:
   review:
     uses: adzaps/.github/.github/workflows/claude-review.yml@main
@@ -50,6 +55,13 @@ on:
     types: [opened, assigned]
   pull_request_review:
     types: [submitted]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+  actions: read
 
 jobs:
   claude:
@@ -93,6 +105,4 @@ After pushing this repo:
 
 1. **Claude Review**: Add the workflow template to a repo -> open a PR -> verify Claude review posts
 2. **Claude Code**: Add the workflow template to a repo -> comment `@claude hello` on an issue -> verify Claude responds
-3. **Review opt-out**: Set `CLAUDE_REVIEW_DISABLED=true` on a repo -> open a PR -> verify review is skipped
-4. **Code opt-out**: Set `CLAUDE_CODE_DISABLED=true` on a repo -> mention `@claude` -> verify it's skipped
-5. **Custom instructions**: Use caller with `custom_instructions` -> verify instructions are reflected in behavior
+3. **Custom instructions**: Use caller with `custom_instructions` -> verify instructions are reflected in behavior
